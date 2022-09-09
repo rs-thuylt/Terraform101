@@ -175,23 +175,90 @@ Depending on which OS you are running on, your terraform installation might be d
 <!-- Hands-on -->
 # Hands-on
 
+<!-- Configure the AWS Provider -->
+### Configure the AWS Provider
+- Create a file called `main.tf` and type the following
+  ```hcl
+  # Configure the AWS Provider
+  provider "aws" {
+    region = "ap-southeast-1"
+  }
+  ```
+
 <!-- Create your EC2 resource and launch your EC2 instance -->
 ### Create your EC2 resource and launch your EC2 instance
-```hcl
-Updating ...
-```
+- In `main.tf` file, type the following
+  ```hcl
+  # Create an EC2 instance
+  resource "aws_instance" "ec2" {
+    ami           = "ami-0b89f7b3f054b957e"
+    instance_type = "t2.micro"
+
+    tags = {
+      Name = "EC2 from Terraform"
+    }
+  }
+  ```
 
 <!-- Variables -->
 ### Variables
-```hcl
-Updating ...
-```
+- In `main.tf` file, type the following
+  ```hcl
+  # Create an EC2 instance
+  resource "aws_instance" "ec2" {
+    ami           = var.ami_value           👈 Use variable
+    instance_type = var.instance_type_value 👈 Use variable
+
+    tags = {
+      Name = "EC2 from Terraform"
+    }
+  }
+
+  # Create `ami_value` variable
+  variable "ami_value" {
+    type    = string
+    default = "ami-0b89f7b3f054b957e"
+  }
+
+  # Create `instance_type_value` variable
+  variable "instance_type_value" {
+    type    = string
+    default = "t2.micro"
+  }
+  ```
 
 <!-- Modules -->
 ### Modules
-```hcl
-Updating ...
-```
+- Create a file called `main.tf` and type the following
+  ```hcl
+  # Configure the AWS Provider
+  provider "aws" {
+    region = "ap-southeast-1"
+  }
+
+  # Import module
+  module "ec2_module" {
+    source = "./ec2"
+  }
+  ```
+
+- Create a file called `ec2.tf` inside a module named `ec2` and type the following
+  ```hcl
+  # Create an EC2 instance
+  resource "aws_instance" "ec2" {
+    ami           = "ami-0b89f7b3f054b957e"
+    instance_type = "t2.micro"
+
+    tags = {
+      Name = "EC2 from Terraform"
+    }
+  }
+
+  # Export `ec2_instance_id` value
+  output "ec2_instance_id" {
+    value = aws_instance.ec2.id
+  }
+  ```
 
 <!-- Terraform command lines -->
 ## Terraform command lines
